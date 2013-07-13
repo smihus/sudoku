@@ -199,7 +199,7 @@ class Sudoku(object):
         print(self)
 
     def find_hiden_singles_in_boxes(self):
-        pass
+        print('hiden singles in boxes')
 
     def solve(self):
         i = 0
