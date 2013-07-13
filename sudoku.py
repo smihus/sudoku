@@ -117,9 +117,12 @@ class Sudoku(object):
             for col in range(len(self.sudoku)):
                 cell = self.sudoku[row][col]
                 if cell == '0':
+                    box = [k for k, v in self.CELLS_IN_BOXES.items() if row in v['rows'] and col in v['cols']]
+
                     t.append({
                         'row': row,
                         'col': col,
+                        'box': box[0],
                         'poss_values': self.check_cell(row, col)
                     })
         #print(t)
@@ -199,7 +202,32 @@ class Sudoku(object):
         print(self)
 
     def find_hiden_singles_in_boxes(self):
-        print('hiden singles in boxes')
+        poss_values = self.check_cells()
+
+        if len(poss_values) == 0:
+            return
+
+        boxes = {}
+
+        for b in range(9):
+            for cell in poss_values:
+                b = cell['box']
+                if b in boxes:
+                    boxes[b] += list(cell['poss_values'])
+                else:
+                    boxes[b] = list(cell['poss_values'])
+
+        for b in boxes:
+            for v in boxes[b]:
+                if boxes[b].count(v) == 1:
+                    print('In box {0} = {1}'.format(b, v))
+
+                    for cell in poss_values:
+                        if cell['box'] == b and v in cell['poss_values']:
+                            self.sudoku[cell['row']][cell['col']] = v
+
+        print('Hiden singles in box')
+        print(self)
 
     def solve(self):
         i = 0
@@ -226,7 +254,7 @@ class Sudoku(object):
         else:
             print('I can\'t solve this sudoku :(')
 
-if __name__ == '__main__':
+def main():
     sudoku = Sudoku()
     sudoku.load_from_file('s4.txt')
     print(sudoku)
@@ -238,3 +266,6 @@ if __name__ == '__main__':
     #sudoku.check_cell(0, 1)
     #sudoku.check_cells()
     sudoku.solve()
+
+if __name__ == '__main__':
+    main()
