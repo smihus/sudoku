@@ -129,6 +129,7 @@ class Sudoku(object):
         return t
 
     def find_singles(self):
+        singles = []
         while True:
             poss_values = self.check_cells()
             if len(poss_values) == 0:
@@ -139,15 +140,15 @@ class Sudoku(object):
                 if len(cell['poss_values']) == 1:
                     row = cell['row']
                     col = cell['col']
-                    self.sudoku[row][col] = cell['poss_values'].pop()
-                    #print(self)
+                    value = cell['poss_values'].pop()
+                    self.sudoku[row][col] = value
+                    singles.append({'row': row, 'col': col, 'value': value})
                     has_one_poss_value = True
 
             if not has_one_poss_value:
                 break
 
-        print('Find singles \n')
-        print(self)
+        return singles
 
     def find_hiden_singles_in_rows(self):
         poss_values = self.check_cells()
@@ -253,6 +254,7 @@ class Sudoku(object):
             print('Sudoku is done')
         else:
             print('I can\'t solve this sudoku :(')
+
 
 def main():
     sudoku = Sudoku()

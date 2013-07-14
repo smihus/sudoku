@@ -1,2 +1,3 @@
 sudoku.sublime-project
 sudoku.sublime-workspace
+*.pyc
