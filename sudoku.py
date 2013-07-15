@@ -52,7 +52,6 @@ class Sudoku(object):
     def check_row(self, i):
         row = set(self.sudoku[i])
         row = self.FULL.difference(row)
-        #print(print('Row #{0}: {1}'.format(i, row)))
         return row
 
     def check_col(self, i):
@@ -61,17 +60,12 @@ class Sudoku(object):
             col.add(r[i])
 
         col = self.FULL.difference(col)
-        #print(print('Col #{0}: {1}'.format(i, col)))
         return col
 
     def check_box(self, i):
 
         box = {self.sudoku[r][c] for r in self.CELLS_IN_BOXES[i]['rows'] for c in self.CELLS_IN_BOXES[i]['cols']}
-
-        # print(box)
-
         box = self.FULL.difference(box)
-        # print('Box #{0}: {1}'.format(i, box))
 
         return box
 
@@ -97,7 +91,6 @@ class Sudoku(object):
 
         cell = self.sudoku[row][col]
         if cell != '0':
-            #print(cell)
             return cell
 
         row_set = self.check_row(row)
@@ -108,7 +101,6 @@ class Sudoku(object):
                     box_set = self.check_box(box)
 
         diff = self.FULL.intersection(row_set, col_set, box_set)
-        #print('Cell [{0}, {1}] can be in {2}'.format(row, col, diff))
         return diff
 
     def check_cells(self):
@@ -125,7 +117,6 @@ class Sudoku(object):
                         'box': box[0],
                         'poss_values': self.check_cell(row, col)
                     })
-        #print(t)
         return t
 
     def find_singles(self):
@@ -151,10 +142,13 @@ class Sudoku(object):
         return singles
 
     def find_hiden_singles_in_rows(self):
+
+        hiden_singles = []
+
         poss_values = self.check_cells()
 
         if len(poss_values) == 0:
-            return
+            return hiden_singles
 
         rows = {}
         for cell in poss_values:
@@ -167,20 +161,20 @@ class Sudoku(object):
         for r in rows:
             for v in rows[r]:
                 if rows[r].count(v) == 1:
-                    #print('In row {0} = {1}'.format(r, v))
 
                     for cell in poss_values:
                         if cell['row'] == r and v in cell['poss_values']:
                             self.sudoku[r][cell['col']] = v
-                            #print(self)
-        print('Hiden singles in row')
-        print(self)
+                            hiden_singles.append({'row': r, 'col': cell['col'], 'value': v})
+
+        return hiden_singles
 
     def find_hiden_singles_in_cols(self):
+        hiden_singles = []
         poss_values = self.check_cells()
 
         if len(poss_values) == 0:
-            return
+            return hiden_singles
 
         cols = {}
         for cell in poss_values:
@@ -193,20 +187,20 @@ class Sudoku(object):
         for c in cols:
             for v in cols[c]:
                 if cols[c].count(v) == 1:
-                    #print('In col {0} = {1}'.format(c, v))
 
                     for cell in poss_values:
                         if cell['col'] == c and v in cell['poss_values']:
                             self.sudoku[cell['row']][c] = v
-                            #print(self)
-        print('Hiden singles in col')
-        print(self)
+                            hiden_singles.append({'row': cell['row'], 'col': c, 'value': v})
+
+        return hiden_singles
 
     def find_hiden_singles_in_boxes(self):
+        hiden_singles = []
         poss_values = self.check_cells()
 
         if len(poss_values) == 0:
-            return
+            return hiden_singles
 
         boxes = {}
 
@@ -226,19 +220,20 @@ class Sudoku(object):
                     for cell in poss_values:
                         if cell['box'] == b and v in cell['poss_values']:
                             self.sudoku[cell['row']][cell['col']] = v
+                            hiden_singles.append({'row': cell['row'], 'col': cell['col'], 'value': v})
 
-        print('Hiden singles in box')
-        print(self)
+        return hiden_singles
 
     def solve(self):
-        i = 0
-        while i < 5:
+
+        while True:
 
             poss_values_before = self.check_cells()
-            self.find_singles()
-            self.find_hiden_singles_in_rows()
-            self.find_hiden_singles_in_cols()
-            self.find_hiden_singles_in_boxes()
+
+            print('Singles: ', self.find_singles())
+            print('Hiden singles in rows: ', self.find_hiden_singles_in_rows())
+            print('Hiden singles in cols: ', self.find_hiden_singles_in_cols())
+            print('Hiden singles in boxes: ', self.find_hiden_singles_in_boxes())
 
             poss_values_after = self.check_cells()
 
@@ -248,8 +243,6 @@ class Sudoku(object):
                 print("There aren't changes")
                 break
 
-            i += 1
-
         if len(self.check_cells()) == 0:
             print('Sudoku is done')
         else:
@@ -258,16 +251,11 @@ class Sudoku(object):
 
 def main():
     sudoku = Sudoku()
-    sudoku.load_from_file('s4.txt')
+    sudoku.load_from_file('s3.txt')
+
     print(sudoku)
-    #sudoku.check_rows()
-    #sudoku.check_col(0)
-    #sudoku.check_cols()
-    #sudoku.check_box(0)
-    # sudoku.check_boxes()
-    #sudoku.check_cell(0, 1)
-    #sudoku.check_cells()
     sudoku.solve()
+    print(sudoku)
 
 if __name__ == '__main__':
     main()

@@ -29,5 +29,6 @@ class TestSudoku(unittest.TestCase):
             {'col': 5, 'value': '9', 'row': 4}
         ], 'find wrong singles')
 
+    def test_
 if __name__ == '__main__':
     unittest.main()
